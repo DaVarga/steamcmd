@@ -1,0 +1,8 @@
+compose/hlds/*
+compose/src2/*
+compose/srcds/*
+!compose/hlds/*.yml
+!compose/src2/*.yml
+!compose/srcds/*.yml
+
+.vscode/*

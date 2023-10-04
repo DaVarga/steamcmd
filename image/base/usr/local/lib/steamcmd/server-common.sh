@@ -16,6 +16,8 @@ SIGNAL_SERVER_HEALTHY="Connection to Steam servers successful."
 MESSAGE_PREFIX="[${command_upper}]"
 MESSAGE_STEAMCMD_USE_ATTACH="Use 'server.sh attach' to attach to the ${command_upper} tmux session."
 
+MESSAGE_STEAMCMD_NO_PASSWORD="${MESSAGE_PREFIX} No password for Steam user ${STEAMCMD_STEAM_USER} provided, falling back to anonymous user"
+
 MESSAGE_STEAMCMD_UPDATE_STARTED="${MESSAGE_PREFIX} Updating game server... ${MESSAGE_STEAMCMD_USE_ATTACH}"
 MESSAGE_STEAMCMD_UPDATE_RUNNING="${MESSAGE_PREFIX} SteamCMD is currently updating. ${MESSAGE_STEAMCMD_USE_ATTACH}"
 MESSAGE_STEAMCMD_UPDATE_FINISHED="${MESSAGE_PREFIX} Update finished."
@@ -63,11 +65,25 @@ _update() {
         return 1
     fi
 
+    if [ -f "${STEAMCMD_STEAM_PASSWORD_FILE}" ]; then
+        local pwfile
+        pwfile="$(cat "$STEAMCMD_STEAM_PASSWORD_FILE")"
+    fi
+
+    local user="${STEAMCMD_STEAM_USER:=anonymous}"
+    local pass="${pwfile:=$STEAMCMD_STEAM_PASSWORD}"
+
+    if [[ $pass == '' ]] && [[ $user != 'anonymous' ]]; then
+        echo "${MESSAGE_STEAMCMD_NO_PASSWORD}"
+        user='anonymous'
+        unset pass;
+    fi
+
     echo ${MESSAGE_STEAMCMD_UPDATE_STARTED}
 
     ${TMUX_CMD} send-keys -t ${STEAMCMD_SERVER_SESSION_NAME} "${STEAMCMD_SH} \
         +force_install_dir ${STEAMCMD_SERVER_HOME} \
-        +login anonymous \
+        +login ${user} ${pass} \
         ${STEAMCMD_SERVER_APP_CONFIG} \
         +app_update ${STEAMCMD_SERVER_APPID} validate \
         +quit; ${TMUX_CMD} wait-for -S steamcmd-update-finished" "Enter"
@@ -75,7 +91,12 @@ _update() {
     # Fix SteamCMD runtime error
     # [S_API FAIL] SteamAPI_Init() failed; unable to locate a running instance of Steam, or a local steamclient.dll.
     mkdir -p "${STEAMCMD_USER_HOME}/.steam"
-    ln -sf "${STEAMCMD_INSTALL_DIR}/linux32" "${STEAMCMD_USER_HOME}/.steam/sdk32"
+    
+    if $STEAMCMD_SERVER_LINK_SDK64 ; then 
+        ln -sf "${STEAMCMD_INSTALL_DIR}/linux64" "${STEAMCMD_USER_HOME}/.steam/sdk64"
+    else 
+        ln -sf "${STEAMCMD_INSTALL_DIR}/linux32" "${STEAMCMD_USER_HOME}/.steam/sdk32"
+    fi
 
     ${TMUX_CMD} wait-for steamcmd-update-finished
     echo ${MESSAGE_STEAMCMD_UPDATE_FINISHED}

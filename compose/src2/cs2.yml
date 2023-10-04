@@ -1,0 +1,55 @@
+version: '3.7'
+
+networks:
+  src2:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: 0
+
+# src2 image: Source 2
+services:
+  cs2:
+    image: thetredev/steamcmd:src2
+    container_name: cs2
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      TIME_ZONE: Europe/Berlin
+      STEAMCMD_UID: 1000
+      STEAMCMD_GID: 5000
+      STEAMCMD_SERVER_APPID: 730
+      STEAMCMD_SERVER_MAP: de_dust2
+      STEAMCMD_SERVER_LAUNCH_PARAMS: -serverlogging +game_type 0 +game_mode 1
+      STEAMCMD_STEAM_USER: anonymous
+      STEAMCMD_STEAM_PASSWORD: anonymous
+      # alternative way of providing a password via file / docker secret
+      # STEAMCMD_STEAM_PASSWORD_FILE: /run/secrets/steamcmd_password
+      STEAMCMD_SERVER_SESSION_NAME: cs2
+    ports:
+      - "27015:27015/udp"
+      # enable the TCP one for RCON
+      #- "27015:27015/tcp"
+    volumes:
+      # game server files
+      - ./cs2:/var/lib/steamcmd/server
+      # shared tmux socket directory
+      #- /tmp/steamcmd:/tmp/steamcmd
+    networks:
+      - src2
+    security_opt:
+      - no-new-privileges
+    tmpfs:
+      - /tmp
+    ulimits:
+      nofile:
+        soft: 2048
+        hard: 2048
+#     secrets:
+#       - source: steamcmd_password
+#         uid: '1000'
+#         gid: '5000'
+#         mode: 0400
+# secrets:
+#   steamcmd_password:
+#     file: /tmp/steamcmd_password
