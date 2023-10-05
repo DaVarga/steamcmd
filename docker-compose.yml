@@ -12,7 +12,7 @@ services:
       context: ./image/base
       dockerfile: Dockerfile
       args:
-        BUILDKIT_INLINE_CACHE: '1'
+        # BUILDKIT_INLINE_CACHE: '1'
         STEAMRT_PLATFORM_VARIANT: sniper
         STEAMRT_PLATFORM_VERSION: 0.20231002.61997
       cache_from:
@@ -26,7 +26,7 @@ services:
       context: ./image/base
       dockerfile: Dockerfile
       args:
-        BUILDKIT_INLINE_CACHE: '1'
+        # BUILDKIT_INLINE_CACHE: '1'
         STEAMRT_PLATFORM_VARIANT: soldier
         STEAMRT_PLATFORM_VERSION: 0.20231002.61993
       cache_from:
@@ -44,7 +44,7 @@ services:
       context: ./image/src2
       dockerfile: Dockerfile
       args:
-        BUILDKIT_INLINE_CACHE: '1'
+        # BUILDKIT_INLINE_CACHE: '1'
         REGISTRY_BASE_IMAGE: ${DOCKER_REPO_NAMESPACE}:base-sniper
       cache_from:
         - ${DOCKER_REGISTRY_NAME}/${DOCKER_REPO_NAMESPACE}:base-sniper-latest
@@ -57,7 +57,7 @@ services:
       context: ./image/srcds
       dockerfile: Dockerfile
       args:
-        BUILDKIT_INLINE_CACHE: '1'
+        # BUILDKIT_INLINE_CACHE: '1'
         REGISTRY_BASE_IMAGE: ${DOCKER_REPO_NAMESPACE}:base-sniper
         STEAMCMD_SERVER_MAXPLAYERS: '"-maxplayers_override 32"'
         STEAMCMD_SERVER_SESSION_NAME: csgo
@@ -72,7 +72,7 @@ services:
       context: ./image/srcds
       dockerfile: Dockerfile
       args:
-        BUILDKIT_INLINE_CACHE: '1'
+        # BUILDKIT_INLINE_CACHE: '1'
         REGISTRY_BASE_IMAGE: ${DOCKER_REPO_NAMESPACE}:base-sniper
       cache_from:
         - ${DOCKER_REGISTRY_NAME}/${DOCKER_REPO_NAMESPACE}:base-sniper-latest
@@ -85,7 +85,7 @@ services:
       context: ./image/hlds
       dockerfile: Dockerfile
       args:
-        BUILDKIT_INLINE_CACHE: '1'
+        # BUILDKIT_INLINE_CACHE: '1'
         REGISTRY_BASE_IMAGE: ${DOCKER_REPO_NAMESPACE}:base-soldier
       cache_from:
         - ${DOCKER_REGISTRY_NAME}/${DOCKER_REPO_NAMESPACE}:base-soldier-latest

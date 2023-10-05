@@ -48,8 +48,7 @@ run() {
 
     echo "${MESSAGE_STEAMCMD_SERVER_STARTED}"
 
-    ${TMUX_CMD} send-keys -t "${STEAMCMD_SERVER_SESSION_NAME}" \
-        "cd ${STEAMCMD_SERVER_HOME}/game/bin/linuxsteamrt64; \
+    ${TMUX_CMD} send-keys -t ${STEAMCMD_SERVER_SESSION_NAME} "cd ${STEAMCMD_SERVER_HOME}/game/bin/linuxsteamrt64; \
         ./cs2 -dedicated +map ${STEAMCMD_SERVER_MAP} ${STEAMCMD_SERVER_LAUNCH_PARAMS}" \
         "Enter"
 
