@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $(id -u) -ne ${STEAMCMD_UID} ]]; then
-    exec gosu steamcmd "${0}" "$@"
+    exec gosu steamcmd ${0} $@
 fi
 
 source /usr/local/lib/steamcmd/server-common.sh src2
@@ -38,29 +38,27 @@ update() {
     _update
 }
 
+
 run() {
     pre_exit_code=$(_run_pre)
 
     if ! $pre_exit_code; then
-        return "$pre_exit_code"
+        return $pre_exit_code
     fi
 
     echo "${MESSAGE_STEAMCMD_SERVER_STARTED}"
 
-    ${TMUX_CMD} send-keys -t "${STEAMCMD_SERVER_SESSION_NAME}" "cd ${STEAMCMD_SERVER_HOME}/game/bin/linuxsteamrt64; ./cs2 \
-            -dedicated +map ${STEAMCMD_SERVER_MAP} \
-            ${STEAMCMD_SERVER_LAUNCH_PARAMS}; \
-            ${TMUX_CMD} wait-for -S steamcmd-run-finished" \
-            "Enter"
-
-
-    ${TMUX_CMD} wait-for steamcmd-run-finished
+    ${TMUX_CMD} send-keys -t "${STEAMCMD_SERVER_SESSION_NAME}" \
+        "cd ${STEAMCMD_SERVER_HOME}/game/bin/linuxsteamrt64; \
+        ./cs2 -dedicated +map ${STEAMCMD_SERVER_MAP} ${STEAMCMD_SERVER_LAUNCH_PARAMS}" \
+        "Enter"
 
     _run_post
 
-    _setup_csgo_hibernation_hooks
+    # _setup_csgo_hibernation_hooks
     
     return 0
 }
 
-"${@}"
+
+${@}
